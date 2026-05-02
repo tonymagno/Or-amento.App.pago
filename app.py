@@ -574,8 +574,7 @@ def aplicar_estilo_login() -> None:
         """,
         unsafe_allow_html=True,
     )
-section.main > div {
-    padding-bottom: 0 !important;
+section.main > div {  padding-bottom: 0 !important;
 }
 
 def tela_login() -> None:
