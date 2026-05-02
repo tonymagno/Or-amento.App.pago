@@ -334,26 +334,25 @@ def aplicar_estilo_login() -> None:
                 display: none !important;
             }}
 
-            .block-container {{
-                padding-top: 0rem !important;
-                padding-bottom: 0rem !important;
-                padding-left: 0 !important;
-                padding-right: 0 !important;
-                max-width: 100% !important;
-            }}
+           .block-container {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    max-width: 100% !important;
+}
 
             .main .block-container {{
                 padding-top: 0 !important;
             }}
 
-            .login-shell {{
-                min-height: 100dvh;
-                display: flex;
-                align-items: flex-start;
-                justify-content: center;
-                padding: 18px 14px 20px 14px;
-                position: relative;
-                overflow: hidden;
+            .login-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: center; /* 🔥 CENTRALIZA VERTICAL */
+    justify-content: center;
+    padding: 0;
+    }
             }}
 
             .login-shell::before {{
@@ -367,16 +366,17 @@ def aplicar_estilo_login() -> None:
                 opacity: .30;
             }}
 
-            .login-grid {{
-                position: relative;
-                z-index: 1;
-                width: min(1360px, 100%);
-                display: grid;
-                grid-template-columns: 1.02fr 0.98fr;
-                gap: 28px;
-                align-items: center;
-                margin-top: 14px;
-            }}
+           .login-grid {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto; /* 🔥 CENTRALIZA */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+}
 
             .login-left {{
                 display: flex;
@@ -457,16 +457,11 @@ def aplicar_estilo_login() -> None:
                 max-width: 640px;
             }}
 
-            .login-card {{
-                width: 100%;
-                max-width: 560px;
-                margin-left: auto;
-                background: linear-gradient(180deg, rgba(16,24,39,0.98), rgba(11,18,32,0.98));
-                border: 1px solid rgba(255,255,255,0.10);
-                border-radius: 24px;
-                padding: 30px;
-                box-shadow: 0 18px 48px rgba(0,0,0,0.26);
-                backdrop-filter: blur(12px);
+            .login-card {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto; /* 🔥 CENTRALIZA */
+}
             }}
 
             .login-card-top {{
@@ -579,7 +574,9 @@ def aplicar_estilo_login() -> None:
         """,
         unsafe_allow_html=True,
     )
-
+section.main > div {
+    padding-bottom: 0 !important;
+}
 
 def tela_login() -> None:
     aplicar_estilo_login()
