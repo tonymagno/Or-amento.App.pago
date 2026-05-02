@@ -4,20 +4,16 @@ from faturamento import verificar_acesso
 
 st.set_page_config(page_title="Orçamento Premium", layout="wide")
 
-# 🔐 LOGIN
 if not usuario_logado():
     tela_login()
     st.stop()
 
-# 💰 VERIFICA SE PAGOU
 if not verificar_acesso():
-    st.warning("🔒 Acesso bloqueado. Assinatura necessária.")
+    st.warning("Acesso bloqueado. Assinatura necessária.")
     st.stop()
 
-# 🚀 SISTEMA LIBERADO
 st.success("Sistema liberado 🚀")
-
-st.title("💎 Sistema de Orçamento Premium")
+st.title("Sistema de Orçamento Premium")
 
 cliente = st.text_input("Cliente")
 servico = st.text_input("Serviço")
