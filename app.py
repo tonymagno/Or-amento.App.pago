@@ -451,14 +451,7 @@ def aplicar_estilo_login() -> None:
     max-width: 480px;
     margin: 0 auto; /* 🔥 CENTRALIZA */
 }}
-            }}
-
-            .login-card-top {{
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                margin-bottom: 18px;
-            }}
+           
 
             .shield {{
                 width: 60px;
