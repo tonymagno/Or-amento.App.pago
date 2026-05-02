@@ -353,18 +353,7 @@ def aplicar_estilo_login() -> None:
     justify-content: center;
     padding: 0;
     }}
-            }}
-
-            .login-shell::before {{
-                content: "";
-                position: absolute;
-                inset: 0;
-                pointer-events: none;
-                background:
-                    linear-gradient(130deg, rgba(212,175,55,0.16), transparent 22%),
-                    linear-gradient(320deg, rgba(212,175,55,0.16), transparent 22%);
-                opacity: .30;
-            }}
+           
 
            .login-grid {{
     position: relative;
