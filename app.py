@@ -20,4 +20,4 @@ servico = st.text_input("Serviço")
 valor = st.number_input("Valor", min_value=0.0)
 
 if st.button("Gerar orçamento"):
-    st.success(f"Orçamento gerado para {cliente} - R$ {valor}")
+    st.success(f"Orçamento gerado para {cliente} - R$ {valor:.2f}")
