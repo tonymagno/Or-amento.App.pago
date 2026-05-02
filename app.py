@@ -334,25 +334,25 @@ def aplicar_estilo_login() -> None:
                 display: none !important;
             }}
 
-           .block-container {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
+           .block-container {{
+                padding-top: 0 !important;
+         padding-bottom: 0 !important;
     padding-left: 2rem !important;
     padding-right: 2rem !important;
     max-width: 100% !important;
-}
+}}
 
             .main .block-container {{
                 padding-top: 0 !important;
             }}
 
-            .login-shell {
+            .login-shell {{
     min-height: 100vh;
     display: flex;
     align-items: center; /* 🔥 CENTRALIZA VERTICAL */
     justify-content: center;
     padding: 0;
-    }
+    }}
             }}
 
             .login-shell::before {{
@@ -366,7 +366,7 @@ def aplicar_estilo_login() -> None:
                 opacity: .30;
             }}
 
-           .login-grid {
+           .login-grid {{
     position: relative;
     z-index: 1;
     width: 100%;
@@ -376,7 +376,7 @@ def aplicar_estilo_login() -> None:
     grid-template-columns: 1fr 1fr;
     gap: 40px;
     align-items: center;
-}
+}}
 
             .login-left {{
                 display: flex;
@@ -457,11 +457,11 @@ def aplicar_estilo_login() -> None:
                 max-width: 640px;
             }}
 
-            .login-card {
+            .login-card {{
     width: 100%;
     max-width: 480px;
     margin: 0 auto; /* 🔥 CENTRALIZA */
-}
+}}
             }}
 
             .login-card-top {{
@@ -574,6 +574,7 @@ def aplicar_estilo_login() -> None:
         """,
         unsafe_allow_html=True,
     )
+    
 def tela_login() -> None:
     aplicar_estilo_login()
 
