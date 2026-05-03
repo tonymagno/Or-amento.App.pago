@@ -33,7 +33,7 @@ if not usuario_logado():
     st.stop()
 
 # 🔐 PAGAMENTO
-if not verificar_acesso():
+if not verificar_acesso(usuario_atual()):
     st.warning("Acesso bloqueado. Assinatura necessária.")
     st.stop()
 
