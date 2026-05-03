@@ -1,104 +1,200 @@
+from __future__ import annotations
+
+from datetime import datetime, timedelta, timezone
+
 import streamlit as st
 
-USUARIOS = {
-    "admin": "123",
-    "tony": "1234"
-}
-
-def usuario_logado():
-    return st.session_state.get("logado", False)
+from db import create_user, get_user, init_db, user_count, verify_password
 
 
-def tela_login():
+def _secret(key: str, default: str) -> str:
+    try:
+        return st.secrets.get(key, default)
+    except Exception:
+        return default
 
-    st.markdown("""
-    <style>
-    
-    /* FUNDO */
-    .stApp {
-        background: linear-gradient(135deg, #020617, #020617 60%, #0f172a);
-        color: white;
-    }
 
-    /* CENTRALIZAÇÃO */
-    .login-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
+def bootstrap_admin() -> None:
+    init_db()
+    if user_count() == 0:
+        admin_user = _secret("ADMIN_USERNAME", "admin")
+        admin_pass = _secret("ADMIN_PASSWORD", "1234")
+        create_user(
+            admin_user,
+            admin_pass,
+            role="admin",
+            subscription_status="active",
+            plan_expires_at=(datetime.now(timezone.utc) + timedelta(days=30)).isoformat(),
+        )
 
-    /* CARD */
-    .login-card {
-        background: rgba(255,255,255,0.05);
-        padding: 40px;
-        border-radius: 20px;
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255,255,255,0.1);
-        width: 380px;
-        text-align: center;
-        box-shadow: 0 0 40px rgba(0,0,0,0.6);
-    }
 
-    /* TÍTULO */
-    .login-title {
-        font-size: 28px;
-        font-weight: 700;
-        margin-bottom: 5px;
-    }
+def usuario_logado() -> bool:
+    return bool(st.session_state.get("logado", False))
 
-    .login-sub {
-        color: #cbd5e1;
-        font-size: 14px;
-        margin-bottom: 25px;
-    }
 
-    /* INPUT */
-    input {
-        background-color: #020617 !important;
-        border: 1px solid #334155 !important;
-        color: white !important;
-        border-radius: 10px !important;
-    }
+def usuario_atual() -> str:
+    return st.session_state.get("usuario", "")
 
-    /* BOTÃO */
-    .stButton button {
-        width: 100%;
-        background: linear-gradient(90deg, #d4af37, #facc15);
-        color: black;
-        font-weight: bold;
-        border-radius: 10px;
-        border: none;
-        padding: 12px;
-        margin-top: 10px;
-    }
 
-    .stButton button:hover {
-        background: linear-gradient(90deg, #facc15, #d4af37);
-    }
+def fazer_logout() -> None:
+    st.session_state.logado = False
+    st.session_state.usuario = ""
+    st.rerun()
 
-    </style>
-    """, unsafe_allow_html=True)
 
-    # CONTAINER CENTRAL
-    st.markdown('<div class="login-container">', unsafe_allow_html=True)
+def tela_login() -> None:
+    bootstrap_admin()
 
-    with st.container():
-        st.markdown('<div class="login-card">', unsafe_allow_html=True)
+    st.markdown(
+        """
+        <style>
+            .block-container { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+            header, footer { visibility: hidden; }
+            .stApp {
+                background: radial-gradient(circle at top left, #0f172a, #020617);
+            }
+            .login-wrap {
+                min-height: 100dvh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 18px;
+            }
+            .login-box {
+                width: min(1100px, 100%);
+                display: grid;
+                grid-template-columns: 1.15fr 0.85fr;
+                gap: 28px;
+                align-items: center;
+            }
+            .hero {
+                color: white;
+                padding: 12px 0;
+            }
+            .kicker {
+                color: #f5d46b;
+                text-transform: uppercase;
+                letter-spacing: .22em;
+                font-size: .74rem;
+                font-weight: 800;
+            }
+            .title {
+                font-size: clamp(2.3rem, 3vw, 3.4rem);
+                font-weight: 900;
+                line-height: 1.02;
+                margin: 12px 0 12px 0;
+            }
+            .gold { color: #f2d16b; }
+            .sub {
+                color: #94a3b8;
+                line-height: 1.8;
+                max-width: 620px;
+                font-size: 1rem;
+            }
+            .badges { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+            .badge {
+                color:#f5e7b2;
+                border:1px solid rgba(212,175,55,.35);
+                background: rgba(212,175,55,.08);
+                padding:7px 14px;
+                border-radius:999px;
+                font-size:.82rem;
+                font-weight:800;
+            }
+            .card {
+                background: linear-gradient(180deg, rgba(16,24,39,.98), rgba(11,18,32,.98));
+                border: 1px solid rgba(255,255,255,.10);
+                border-radius: 24px;
+                padding: 30px;
+                box-shadow: 0 18px 48px rgba(0,0,0,.28);
+                backdrop-filter: blur(12px);
+                max-width: 520px;
+                margin-left: auto;
+            }
+            .shield {
+                width: 60px; height: 60px; border-radius: 18px;
+                display:grid; place-items:center;
+                margin: 0 auto 14px auto;
+                background: linear-gradient(135deg, rgba(212,175,55,.18), rgba(255,255,255,.03));
+                border: 1px solid rgba(212,175,55,.45);
+                color:#f2d16b; font-size:1.55rem;
+            }
+            .card-title { text-align:center; color:white; font-size:1.8rem; font-weight:900; margin:6px 0 4px 0; }
+            .card-sub { text-align:center; color:#94a3b8; margin-bottom: 18px; line-height: 1.7; }
+            .stTextInput>div>div>input {
+                border-radius: 14px !important;
+                border: 1px solid #253244 !important;
+                background-color: #0f172a !important;
+                color: #f8fafc !important;
+                height: 48px;
+            }
+            .stButton>button {
+                width: 100%;
+                border-radius: 14px;
+                border: 1px solid rgba(212,175,55,.25);
+                padding: .92rem 1rem;
+                font-weight: 900;
+                background: linear-gradient(90deg, #D4AF37, #F2D16B);
+                color: #111827;
+                box-shadow: 0 12px 28px rgba(212,175,55,.18);
+            }
+            @media (max-width: 900px) {
+                .login-box { grid-template-columns: 1fr; }
+                .card { max-width: 100%; margin-left: 0; }
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
-        st.markdown('<div class="login-title">🔐 Acesso ao Sistema</div>', unsafe_allow_html=True)
-        st.markdown('<div class="login-sub">Entre com suas credenciais</div>', unsafe_allow_html=True)
+    st.markdown("<div class='login-wrap'>", unsafe_allow_html=True)
+    col1, col2 = st.columns([1.15, 0.85], gap="large")
 
-        usuario = st.text_input("Usuário")
-        senha = st.text_input("Senha", type="password")
+    with col1:
+        st.markdown(
+            """
+            <div class='hero'>
+                <div class='kicker'>ACESSO RESTRITO</div>
+                <div class='title'>Orçamento <span class='gold'>Premium</span></div>
+                <div class='sub'>
+                    Sistema profissional para criar orçamentos, organizar múltiplos serviços
+                    e gerar propostas elegantes para fechar mais negócios.
+                </div>
+                <div class='badges'>
+                    <span class='badge'>Profissional</span>
+                    <span class='badge'>Seguro</span>
+                    <span class='badge'>Elegante</span>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        if st.button("Entrar no Sistema"):
-            if usuario in USUARIOS and USUARIOS[usuario] == senha:
+    with col2:
+        st.markdown(
+            """
+            <div class='card'>
+                <div class='shield'>🔒</div>
+                <div class='card-title'>Acesso ao Sistema</div>
+                <div class='card-sub'>Entre com suas credenciais para continuar.</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        with st.form("form_login"):
+            usuario = st.text_input("Usuário", placeholder="Digite seu usuário")
+            senha = st.text_input("Senha", type="password", placeholder="Digite sua senha")
+            entrar = st.form_submit_button("Entrar no Sistema")
+
+        if entrar:
+            user = get_user(usuario)
+            if user and verify_password(senha, user["password_salt"], user["password_hash"]):
                 st.session_state.logado = True
+                st.session_state.usuario = usuario
                 st.rerun()
             else:
-                st.error("Usuário ou senha inválidos")
+                st.error("Usuário ou senha inválidos.")
 
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.stop()
