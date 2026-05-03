@@ -54,19 +54,21 @@ def tela_login() -> None:
                 background: radial-gradient(circle at top left, #0f172a, #020617);
             }
             .login-wrap {
-                min-height: 100dvh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 18px;
-            }
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 8px 18px 12px;
+    position: relative;
+    overflow: hidden;
+}
             .login-box {
-                width: min(1100px, 100%);
-                display: grid;
-                grid-template-columns: 1.15fr 0.85fr;
-                gap: 28px;
-                align-items: center;
-            }
+    width: min(1100px, 100%);
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 18px;
+    align-items: center;
+}
             .hero {
                 color: white;
                 padding: 12px 0;
@@ -101,16 +103,16 @@ def tela_login() -> None:
                 font-size:.82rem;
                 font-weight:800;
             }
-            .card {
-                background: linear-gradient(180deg, rgba(16,24,39,.98), rgba(11,18,32,.98));
-                border: 1px solid rgba(255,255,255,.10);
-                border-radius: 24px;
-                padding: 30px;
-                box-shadow: 0 18px 48px rgba(0,0,0,.28);
-                backdrop-filter: blur(12px);
-                max-width: 520px;
-                margin-left: auto;
-            }
+.card {
+    background: linear-gradient(180deg, rgba(16,24,39,.98), rgba(11,18,32,.98));
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 24px;
+    padding: 24px 28px 22px;
+    box-shadow: 0 18px 48px rgba(0,0,0,.28);
+    backdrop-filter: blur(12px);
+    max-width: 520px;
+    margin-left: auto;
+}
             .shield {
                 width: 60px; height: 60px; border-radius: 18px;
                 display:grid; place-items:center;
@@ -119,8 +121,8 @@ def tela_login() -> None:
                 border: 1px solid rgba(212,175,55,.45);
                 color:#f2d16b; font-size:1.55rem;
             }
-            .card-title { text-align:center; color:white; font-size:1.8rem; font-weight:900; margin:6px 0 4px 0; }
-            .card-sub { text-align:center; color:#94a3b8; margin-bottom: 18px; line-height: 1.7; }
+            .card-title { margin: 2px 0 2px 0; }
+.card-sub { margin-bottom: 12px; }
             .stTextInput>div>div>input {
                 border-radius: 14px !important;
                 border: 1px solid #253244 !important;
@@ -183,9 +185,18 @@ def tela_login() -> None:
         )
 
         with st.form("form_login"):
-            usuario = st.text_input("Usuário", placeholder="Digite seu usuário")
-            senha = st.text_input("Senha", type="password", placeholder="Digite sua senha")
-            entrar = st.form_submit_button("Entrar no Sistema")
+    usuario = st.text_input(
+        "Usuário",
+        placeholder="Digite seu usuário",
+        label_visibility="collapsed",
+    )
+    senha = st.text_input(
+        "Senha",
+        type="password",
+        placeholder="Digite sua senha",
+        label_visibility="collapsed",
+    )
+    entrar = st.form_submit_button("Entrar no Sistema")
 
         if entrar:
             user = get_user(usuario)
