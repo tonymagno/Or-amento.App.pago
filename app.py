@@ -347,24 +347,14 @@ def aplicar_estilo_login() -> None:
             }}
 
             .login-shell {{
-    min-height: 100vh;
-    display: flex;
-    align-items: center; /* 🔥 CENTRALIZA VERTICAL */
-    justify-content: center;
-    padding: 0;
-    }}
-           
+    min-height: auto;
+    padding: 14px 10px 20px 10px;
+}}
 
-           .login-grid {{
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto; /* 🔥 CENTRALIZA */
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    align-items: center;
+.login-grid {{
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 0;
 }}
 
             .login-left {{
