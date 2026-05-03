@@ -1,6 +1,6 @@
 import streamlit as st
 from auth import tela_login, usuario_logado, usuario_atual, fazer_logout
-from faturamento import verificar_acesso
+from billing import verificar_acesso
 
 st.set_page_config(page_title="Orçamento Premium", layout="wide")
 
