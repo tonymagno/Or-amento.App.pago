@@ -48,19 +48,30 @@ def tela_login() -> None:
     st.markdown(
         """
         <style>
-            .block-container { padding-top: 1rem !important; padding-bottom: 1rem !important; }
-            header, footer { visibility: hidden; }
-            .stApp {
-                background: radial-gradient(circle at top left, #0f172a, #020617);
-            }
-            .login-wrap {
-    min-height: 100vh;
+            /* REMOVE TODO ESPAÇO DO STREAMLIT */
+.block-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+}
+
+/* REMOVE ESPAÇO FANTASMA SUPERIOR */
+[data-testid="stAppViewContainer"] {
+    padding-top: 0 !important;
+}
+
+/* CONTAINER LOGIN CORRIGIDO */
+.login-wrap {
+    height: 100vh; /* 🔥 chave da correção */
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
-    padding: 8px 18px 12px;
-    position: relative;
-    overflow: hidden;
+    padding: 0;
+}
+
+/* REMOVE QUALQUER MARGEM EXTRA */
+section.main > div {
+    padding-top: 0 !important;
 }
             .login-box {
     width: min(1100px, 100%);
