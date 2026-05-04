@@ -26,38 +26,29 @@ def calcular_total(itens: list[dict], desconto: float, taxa_extra: float) -> tup
     subtotal = sum(item["quantidade"] * item["preco_unitario"] for item in itens)
     total = subtotal - desconto + taxa_extra
     return subtotal, max(total, 0.0)
-    def gerar_mensagem_whatsapp(
-    cliente: str,
-    negocio: str,
-    itens: list[dict],
-    subtotal: float,
-    desconto: float,
-    taxa_extra: float,
-    total: float,
-) -> str:
+    def gerar_mensagem_whatsapp(cliente, negocio, itens, subtotal, desconto, taxa_extra, total):
     linhas = [
         "*ORÇAMENTO PREMIUM*",
         "",
         f"Cliente: {cliente}",
         f"Negócio: {negocio}",
         "",
-        "Serviços:",
+        "Serviços:"
     ]
 
-    for i, item in enumerate(itens, start=1):
+    for item in itens:
         total_item = item["quantidade"] * item["preco_unitario"]
         linhas.append(
-            f"{i}. {item['servico']} | Qtd: {item['quantidade']} | "
-            f"Unit: {format_brl(item['preco_unitario'])} | Total: {format_brl(total_item)}"
+            f"- {item['servico']} | Qtd: {item['quantidade']} | R$ {total_item}"
         )
 
-    linhas += [
-        "",
-        f"Subtotal: {format_brl(subtotal)}",
-        f"Desconto: {format_brl(desconto)}",
-        f"Taxa extra: {format_brl(taxa_extra)}",
-        f"Total final: {format_brl(total)}",
-    ]
+    linhas.append("")
+    linhas.append(f"Subtotal: R$ {subtotal}")
+    linhas.append(f"Desconto: R$ {desconto}")
+    linhas.append(f"Taxa extra: R$ {taxa_extra}")
+    linhas.append(f"TOTAL: R$ {total}")
+
+    return "\n".join(linhas)
     return "\n".join(linhas)
 
 
