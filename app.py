@@ -26,7 +26,9 @@ def calcular_total(itens: list[dict], desconto: float, taxa_extra: float) -> tup
     subtotal = sum(item["quantidade"] * item["preco_unitario"] for item in itens)
     total = subtotal - desconto + taxa_extra
     return subtotal, max(total, 0.0)
-    def gerar_mensagem_whatsapp(cliente, negocio, itens, subtotal, desconto, taxa_extra, total):
+
+
+def gerar_mensagem_whatsapp(cliente, negocio, itens, subtotal, desconto, taxa_extra, total):
     linhas = [
         "*ORÇAMENTO PREMIUM*",
         "",
@@ -48,7 +50,6 @@ def calcular_total(itens: list[dict], desconto: float, taxa_extra: float) -> tup
     linhas.append(f"Taxa extra: R$ {taxa_extra}")
     linhas.append(f"TOTAL: R$ {total}")
 
-    return "\n".join(linhas)
     return "\n".join(linhas)
 
 
