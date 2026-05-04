@@ -21,7 +21,6 @@ init_db()
 
 def format_brl(valor: float) -> str:
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
 def calcular_total(itens: list[dict], desconto: float, taxa_extra: float) -> tuple[float, float]:
     subtotal = sum(item["quantidade"] * item["preco_unitario"] for item in itens)
     total = subtotal - desconto + taxa_extra
@@ -51,7 +50,6 @@ def gerar_mensagem_whatsapp(cliente, negocio, itens, subtotal, desconto, taxa_ex
     linhas.append(f"TOTAL: R$ {total}")
 
     return "\n".join(linhas)
-
 
 def gerar_pdf_bytes(
     cliente: str,
