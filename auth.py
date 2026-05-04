@@ -13,18 +13,29 @@ def hash_password(password):
 
 def verificar_login(username, password):
     """
-    Verifica credenciais de login.
-    Primeiro tenta admin definido em st.secrets, depois consulta o banco.
+    Login profissional com fallback seguro
     """
-    admin_user = st.secrets["tony"]
-    admin_pass_hash = st.secrets["SHA256"]
-    # Verifica admin
-    if username == admin_user and hash_password(password) == admin_pass_hash:
-        return True
-    # Verifica banco de usuários cadastrados
+
+    import hashlib
+
+    def hash_password(p):
+        return hashlib.sha256(p.encode()).hexdigest()
+
+    try:
+        admin_user = st.secrets["ADMIN_USERNAME"]
+        admin_pass_hash = st.secrets["ADMIN_PASSWORD"]
+
+        # 🔐 valida admin via hash
+        if username == admin_user and hash_password(password) == admin_pass_hash:
+            return True
+
+    except KeyError:
+        st.error("Erro: secrets não configurados corretamente.")
+        return False
+
+    # 🔄 fallback: usuários do banco
     user = get_user(username)
     return (user is not None and user[1] == hash_password(password))
-
 def tela_login():
     """
     Exibe a tela de login estilizada. Bloqueia o app até login exitoso.
