@@ -6,6 +6,9 @@ from db import get_user, set_subscription
 
 
 def verificar_acesso(username: str) -> bool:
+    if not username:
+        return False
+
     user = get_user(username)
     if not user:
         return False
