@@ -3,16 +3,18 @@
 import streamlit as st
 from db import init_db
 
-# Inicializa o DB (caso ainda não exista tabela de assinaturas)
-# Por simplicidade, trata 'billing' no próprio DB de usuários
+init_db()  # Garante que o DB esteja pronto (apesar de já haver em outros pontos)
+
 def verificar_acesso(username):
     """
-    Retorna True se o usuário tiver assinatura ativa.
-    Por exemplo, podemos usar uma tabela ou flag; aqui assumimos True para o admin.
+    Verifica se o usuário tem acesso premium.
+    Por padrão, apenas o admin definido em secrets tem acesso.
     """
-    # Usuário administrador sempre tem acesso completo
+    # Se não há usuário logado, bloqueia
+    if not username:
+        return False
+    # O admin (definido nos secrets) sempre tem acesso
     if username == st.secrets["ADMIN_USERNAME"]:
         return True
-    # (Aqui você poderia verificar outra tabela de assinaturas no DB)
-    # Simulação: usuários comuns não têm acesso
+    # (Aqui seria implementada checagem real de assinatura)
     return False
