@@ -16,8 +16,8 @@ def verificar_login(username, password):
     Verifica credenciais de login.
     Primeiro tenta admin definido em st.secrets, depois consulta o banco.
     """
-    admin_user = st.secrets["ADMIN_USERNAME"]
-    admin_pass_hash = st.secrets["ADMIN_PASSWORD"]
+    admin_user = st.secrets["tony"]
+    admin_pass_hash = st.secrets["SHA256"]
     # Verifica admin
     if username == admin_user and hash_password(password) == admin_pass_hash:
         return True
