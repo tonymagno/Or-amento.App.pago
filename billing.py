@@ -1,41 +1,18 @@
-from __future__ import annotations
+# billing.py
 
-from datetime import datetime, timezone
+import streamlit as st
+from db import init_db
 
-from db import get_user, set_subscription
-
-
-def verificar_acesso(username: str) -> bool:
-    if not username:
-        return False
-
-    user = get_user(username)
-    if not user:
-        return False
-
-    if int(user["is_active"]) != 1:
-        return False
-
-    if user["subscription_status"] != "active":
-        return False
-
-    expires_at = user["plan_expires_at"]
-    if expires_at:
-        try:
-            exp = datetime.fromisoformat(expires_at)
-            if exp.tzinfo is None:
-                exp = exp.replace(tzinfo=timezone.utc)
-            if exp < datetime.now(timezone.utc):
-                return False
-        except ValueError:
-            return False
-
-    return True
-
-
-def ativar_plano(username: str, expires_at_iso: str | None = None) -> None:
-    set_subscription(username, "active", expires_at_iso)
-
-
-def bloquear_plano(username: str) -> None:
-    set_subscription(username, "inactive", None)
+# Inicializa o DB (caso ainda não exista tabela de assinaturas)
+# Por simplicidade, trata 'billing' no próprio DB de usuários
+def verificar_acesso(username):
+    """
+    Retorna True se o usuário tiver assinatura ativa.
+    Por exemplo, podemos usar uma tabela ou flag; aqui assumimos True para o admin.
+    """
+    # Usuário administrador sempre tem acesso completo
+    if username == st.secrets["ADMIN_USERNAME"]:
+        return True
+    # (Aqui você poderia verificar outra tabela de assinaturas no DB)
+    # Simulação: usuários comuns não têm acesso
+    return False
