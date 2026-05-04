@@ -1,11 +1,12 @@
-streamlit
-reportlab
 from __future__ import annotations
 
 from datetime import datetime
 from io import BytesIO
 from urllib.parse import quote
 import textwrap
+streamlit
+reportlab
+
 
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
