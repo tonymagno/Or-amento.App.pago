@@ -145,43 +145,56 @@ st.markdown(
         unsafe_allow_html=True,
     )
 
-    if st.button("🚀 Gerar orçamento"):
-        if not negocio.strip() or not cliente.strip() or not whatsapp.strip() or not st.session_state.itens:
-            st.error("Preencha os dados principais e adicione pelo menos um serviço.")
-        else:
-            add_quote(username, cliente, total)
+if st.button("🚀 Gerar orçamento"):
 
-            mensagem = gerar_mensagem_whatsapp(
-                cliente=cliente,
-                negocio=negocio,
-                itens=st.session_state.itens,
-                subtotal=subtotal,
-                desconto=desconto,
-                taxa_extra=taxa_extra,
-                total=total,
-            )
-            link_whatsapp = gerar_link_whatsapp(whatsapp, mensagem)
-            pdf_bytes = gerar_pdf_bytes(
-                cliente=cliente,
-                negocio=negocio,
-                itens=st.session_state.itens,
-                subtotal=subtotal,
-                desconto=desconto,
-                taxa_extra=taxa_extra,
-                total=total,
-            )
+    if not negocio.strip() or not cliente.strip() or not whatsapp.strip() or not st.session_state.itens:
+        st.error("Preencha os dados principais e adicione pelo menos um serviço.")
 
-            st.success(f"Orçamento gerado para {cliente}.")
-            st.text_area("Mensagem pronta para WhatsApp", mensagem, height=220)
+    else:
+        add_quote(username, cliente, total)
 
-            st.link_button("📲 Enviar via WhatsApp", link_whatsapp)
+        # 🔥 GERAR MENSAGEM
+        mensagem = gerar_mensagem_whatsapp(
+            cliente,
+            negocio,
+            st.session_state.itens,
+            subtotal,
+            desconto,
+            taxa_extra,
+            total
+        )
 
-            st.download_button(
-                label="📄 Baixar PDF",
-                data=pdf_bytes.getvalue(),
-                file_name=f"orcamento_{cliente.strip().replace(' ', '_').lower()}.pdf",
-                mime="application/pdf",
-            )
+        # 🔥 GERAR LINK WHATSAPP
+        numero = "".join(filter(str.isdigit, whatsapp))
+        if not numero.startswith("55"):
+            numero = "55" + numero
+
+        link = f"https://wa.me/{numero}?text={quote(mensagem)}"
+
+        # 🔥 GERAR PDF
+        pdf = gerar_pdf_bytes(
+            cliente,
+            negocio,
+            st.session_state.itens,
+            subtotal,
+            desconto,
+            taxa_extra,
+            total
+        )
+
+        st.success(f"Orçamento gerado para {cliente}")
+
+        # 👇 MOSTRAR BOTÕES
+        st.text_area("Mensagem WhatsApp", mensagem, height=200)
+
+        st.link_button("📲 Enviar via WhatsApp", link)
+
+        st.download_button(
+            "📄 Baixar PDF",
+            data=pdf.getvalue(),
+            file_name=f"orcamento_{cliente}.pdf",
+            mime="application/pdf"
+        )
 
     st.subheader("Histórico recente")
     for row in recent_quotes(username, limit=5):
