@@ -1,6 +1,14 @@
+streamlit
+reportlab
 from __future__ import annotations
 
 from datetime import datetime
+from io import BytesIO
+from urllib.parse import quote
+import textwrap
+
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 
 import streamlit as st
 
@@ -18,6 +26,113 @@ def calcular_total(itens: list[dict], desconto: float, taxa_extra: float) -> tup
     subtotal = sum(item["quantidade"] * item["preco_unitario"] for item in itens)
     total = subtotal - desconto + taxa_extra
     return subtotal, max(total, 0.0)
+    def gerar_mensagem_whatsapp(
+    cliente: str,
+    negocio: str,
+    itens: list[dict],
+    subtotal: float,
+    desconto: float,
+    taxa_extra: float,
+    total: float,
+) -> str:
+    linhas = [
+        "*ORÇAMENTO PREMIUM*",
+        "",
+        f"Cliente: {cliente}",
+        f"Negócio: {negocio}",
+        "",
+        "Serviços:",
+    ]
+
+    for i, item in enumerate(itens, start=1):
+        total_item = item["quantidade"] * item["preco_unitario"]
+        linhas.append(
+            f"{i}. {item['servico']} | Qtd: {item['quantidade']} | "
+            f"Unit: {format_brl(item['preco_unitario'])} | Total: {format_brl(total_item)}"
+        )
+
+    linhas += [
+        "",
+        f"Subtotal: {format_brl(subtotal)}",
+        f"Desconto: {format_brl(desconto)}",
+        f"Taxa extra: {format_brl(taxa_extra)}",
+        f"Total final: {format_brl(total)}",
+    ]
+    return "\n".join(linhas)
+
+
+def gerar_pdf_bytes(
+    cliente: str,
+    negocio: str,
+    itens: list[dict],
+    subtotal: float,
+    desconto: float,
+    taxa_extra: float,
+    total: float,
+) -> BytesIO:
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    largura, altura = A4
+
+    x = 50
+    y = altura - 60
+
+    c.setFont("Helvetica-Bold", 18)
+    c.drawString(x, y, "ORÇAMENTO PREMIUM")
+    y -= 28
+
+    c.setFont("Helvetica", 11)
+    c.drawString(x, y, f"Cliente: {cliente}")
+    y -= 18
+    c.drawString(x, y, f"Negócio: {negocio}")
+    y -= 24
+
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(x, y, "Serviços")
+    y -= 18
+
+    c.setFont("Helvetica", 10)
+    for i, item in enumerate(itens, start=1):
+        total_item = item["quantidade"] * item["preco_unitario"]
+        texto = (
+            f"{i}. {item['servico']} | Qtd: {item['quantidade']} | "
+            f"Unit: {format_brl(item['preco_unitario'])} | Total: {format_brl(total_item)}"
+        )
+        linhas = textwrap.wrap(texto, width=95)
+
+        for linha in linhas:
+            if y < 70:
+                c.showPage()
+                y = altura - 60
+                c.setFont("Helvetica", 10)
+            c.drawString(x, y, linha)
+            y -= 14
+        y -= 4
+
+    y -= 8
+    if y < 120:
+        c.showPage()
+        y = altura - 60
+
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(x, y, f"Subtotal: {format_brl(subtotal)}")
+    y -= 16
+    c.drawString(x, y, f"Desconto: {format_brl(desconto)}")
+    y -= 16
+    c.drawString(x, y, f"Taxa extra: {format_brl(taxa_extra)}")
+    y -= 16
+    c.drawString(x, y, f"Total final: {format_brl(total)}")
+
+    c.save()
+    buffer.seek(0)
+    return buffer
+
+
+def gerar_link_whatsapp(telefone: str, mensagem: str) -> str:
+    numero = "".join(ch for ch in telefone if ch.isdigit())
+    if not numero.startswith("55"):
+        numero = "55" + numero
+    return f"https://wa.me/{numero}?text={quote(mensagem)}"
 
 st.markdown(
     """
@@ -25,25 +140,62 @@ st.markdown(
         .stApp { background: linear-gradient(180deg, #070B11 0%, #0C1420 100%); }
         .block-container { padding-top: 1rem; max-width: 1250px; }
         .hero {
-            background: linear-gradient(135deg, rgba(17,24,39,.98), rgba(10,14,22,.98));
-            border: 1px solid #253244;
-            border-radius: 24px;
-            padding: 22px;
-            margin-bottom: 18px;
-        }
-        .card-box {
-            background: linear-gradient(180deg, #0F1722, #0B1320);
-            border: 1px solid #253244;
-            border-radius: 16px;
-            padding: 14px 16px;
-            margin-bottom: 10px;
-        }
-        .total-box {
-            background: linear-gradient(90deg, rgba(212,175,55,.18), rgba(52,211,153,.12));
-            border: 1px solid rgba(212,175,55,.45);
-            border-radius: 18px;
-            padding: 16px 18px;
-            font-size: 1.15rem;
+            with right:
+    desconto = st.number_input("Desconto", min_value=0.0, step=1.0, value=0.0)
+    taxa_extra = st.number_input("Taxa extra", min_value=0.0, step=1.0, value=0.0)
+
+    subtotal, total = (
+        calcular_total(st.session_state.itens, desconto, taxa_extra)
+        if st.session_state.itens
+        else (0.0, 0.0)
+    )
+
+    st.markdown(
+        f"<div class='total-box'>TOTAL FINAL: {format_brl(total)}</div>",
+        unsafe_allow_html=True,
+    )
+
+    if st.button("🚀 Gerar orçamento"):
+        if not negocio.strip() or not cliente.strip() or not whatsapp.strip() or not st.session_state.itens:
+            st.error("Preencha os dados principais e adicione pelo menos um serviço.")
+        else:
+            add_quote(username, cliente, total)
+
+            mensagem = gerar_mensagem_whatsapp(
+                cliente=cliente,
+                negocio=negocio,
+                itens=st.session_state.itens,
+                subtotal=subtotal,
+                desconto=desconto,
+                taxa_extra=taxa_extra,
+                total=total,
+            )
+            link_whatsapp = gerar_link_whatsapp(whatsapp, mensagem)
+            pdf_bytes = gerar_pdf_bytes(
+                cliente=cliente,
+                negocio=negocio,
+                itens=st.session_state.itens,
+                subtotal=subtotal,
+                desconto=desconto,
+                taxa_extra=taxa_extra,
+                total=total,
+            )
+
+            st.success(f"Orçamento gerado para {cliente}.")
+            st.text_area("Mensagem pronta para WhatsApp", mensagem, height=220)
+
+            st.link_button("📲 Enviar via WhatsApp", link_whatsapp)
+
+            st.download_button(
+                label="📄 Baixar PDF",
+                data=pdf_bytes.getvalue(),
+                file_name=f"orcamento_{cliente.strip().replace(' ', '_').lower()}.pdf",
+                mime="application/pdf",
+            )
+
+    st.subheader("Histórico recente")
+    for row in recent_quotes(username, limit=5):
+        st.write(f"- {row['client_name']} | {format_brl(float(row['total']))} | {row['created_at']}")
             font-weight: 800;
             color: #F2D16B;
             margin: 10px 0 18px 0;
@@ -148,6 +300,7 @@ with right:
     st.markdown(f"<div class='total-box'>TOTAL FINAL: {format_brl(total)}</div>", unsafe_allow_html=True)
 
     if st.button("🚀 Gerar orçamento"):
+        
         if not negocio.strip() or not cliente.strip() or not whatsapp.strip() or not st.session_state.itens:
             st.error("Preencha os dados principais e adicione pelo menos um serviço.")
         else:
