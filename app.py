@@ -1,11 +1,11 @@
 from __future__ import annotations
-
+streamlit
+reportlab
 from datetime import datetime
 from io import BytesIO
 from urllib.parse import quote
 import textwrap
-streamlit
-reportlab
+
 
 
 from reportlab.lib.pagesizes import A4
